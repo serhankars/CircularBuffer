@@ -29,7 +29,7 @@ Item {
         transform:[
             Translate{y:bufferCircle.height/2.0-bufferCircle.radius-writeHead.height},
             Rotation{
-                angle: (360/capacity)*(backend.readIndex)
+                angle: (360/backend.rowCount())*(backend.readIndex)
                 axis { x: 0; y: 0; z: 1 }
                 origin.x: writeHead.width/2; origin.y: bufferCircle.height/2.0;
             }
@@ -47,7 +47,7 @@ Item {
         transform:[
             Translate{y:bufferCircle.height/2.0-bufferCircle.radius-writeHead.height},
             Rotation{
-                angle: (360/capacity)*(backend.writeIndex)
+                angle: (360/backend.rowCount())*(backend.writeIndex)
                 axis { x: 0; y: 0; z: 1 }
                 origin.x: writeHead.width/2; origin.y: bufferCircle.height/2.0;
             }
@@ -55,23 +55,24 @@ Item {
     }
 
     Repeater{
-        visible:capacity>1
+        visible:backend.rowCount()>1
         anchors.fill: parent
         anchors.centerIn:parent
-        model:capacity
+        model:backend
         delegate:CirclePart{
+            anchors.centerIn: parent
             radius:bufferCircle.radius
             strokeColor: bufferCircle.borderColor
             fillColor: bufferCircle.fillColor
-            anchors.centerIn: parent
             thickness: bufferCircle.circleThickness
-            angle:(2*Math.PI)/capacity
-            rotation: (360.0/capacity)*(index-1)
+            angle:(2*Math.PI)/backend.rowCount()
+            rotation: (360.0/backend.rowCount())*(index)
+            text:model.data
         }
     }
 
     Shape{
-        visible:capacity==1
+        visible:backend.rowCount()==1
         anchors.centerIn:parent
         ShapePath{
             startX: 0
@@ -111,7 +112,9 @@ Item {
     Column{
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-        Text{ text:"Capacity: "+ backend.capacity}
+        anchors.rightMargin: 10
+        anchors.bottomMargin: 10
+        Text{ text:"Capacity: "+ backend.rowCount()}
         Text{ text:"Length: "+ backend.length}
         Text{ text:"Read index: "+ backend.readIndex}
         Text{ text:"Write index: "+ backend.writeIndex}

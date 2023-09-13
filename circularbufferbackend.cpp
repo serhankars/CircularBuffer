@@ -2,30 +2,8 @@
 #include <iostream>
 
 CircularBufferBackend::CircularBufferBackend(QObject *parent,int capacity)
-    : QObject{parent}, m_readIndex{0},m_writeIndex{0},m_length{0}, m_capacity(capacity)
+    : QAbstractListModel{parent}, m_readIndex{0},m_writeIndex{0},m_length{0}, m_capacity(capacity)
 {
-    m_data = new int[capacity];
-}
-
-CircularBufferBackend::~CircularBufferBackend()
-{
-    delete[] m_data;
-}
-
-CircularBufferBackend::CircularBufferBackend(const CircularBufferBackend &rvalue)
-{
-    m_capacity = rvalue.capacity();
-    m_data = new int[m_capacity];
-    memcpy(m_data,rvalue.m_data,m_capacity*sizeof(int));
-}
-
-CircularBufferBackend &CircularBufferBackend::operator=(const CircularBufferBackend &rvalue)
-{
-    delete[] m_data;
-    m_capacity = rvalue.capacity();
-    m_data = new int[m_capacity];
-    memcpy(m_data,rvalue.m_data,m_capacity*sizeof(int));
-    return *this;
 }
 
 int CircularBufferBackend::readIndex() const
@@ -51,6 +29,16 @@ int CircularBufferBackend::capacity() const
 void CircularBufferBackend::setCapacity(int capacity)
 {
     m_capacity = capacity;
+    m_data.resize(capacity);
+}
+
+QHash<int, QByteArray> CircularBufferBackend::roleNames() const
+{
+    static QHash<int,QByteArray> mapping{
+        {DataRole,"data"}
+    };
+
+    return mapping;
 }
 
 int CircularBufferBackend::read()
@@ -60,51 +48,35 @@ int CircularBufferBackend::read()
     int result = m_data[m_readIndex];
     m_length--;
     emit lengthChanged();
-    m_readIndex++;
-    if(m_readIndex == m_capacity)
-        m_readIndex = 0;
+    m_readIndex = (m_readIndex + 1) % m_capacity;
     emit readIndexChanged();
     return result;
 }
 
 int CircularBufferBackend::write(int value)
 {
-    if(m_writeIndex==m_readIndex)
+    int modifiedIndex = m_writeIndex;
+    bool overwritten = false;
+    if(m_writeIndex==m_readIndex && m_length>0)
     {
-        if(m_length>0)
-        {
-            m_data[m_writeIndex] = value;
-            m_readIndex++;
+        overwritten = true;
+    }
 
-            if(m_readIndex == m_capacity)
-                m_readIndex = 0;
+    m_data[m_writeIndex] = value;
+    emit dataChanged(index(m_writeIndex),index(m_writeIndex),{DataRole});
+    m_writeIndex = (m_writeIndex + 1) % m_capacity;
+    emit writeIndexChanged();
 
-            emit readIndexChanged();
-
-            m_writeIndex++;
-            if(m_writeIndex == m_capacity)
-                m_writeIndex = 0;
-            emit writeIndexChanged();
-            return -1; // write over unread value
-        }
-        else
-        {
-            m_length++;
-            emit lengthChanged();
-            m_data[m_writeIndex] = value;
-        }
+    if(overwritten)
+    {
+        m_readIndex = (m_readIndex + 1) % m_capacity;
+        emit readIndexChanged();
     }
     else
     {
         m_length++;
         emit lengthChanged();
-        m_data[m_writeIndex] = value;
     }
 
-    m_writeIndex++;
-
-    if(m_writeIndex == m_capacity)
-        m_writeIndex = 0;
-    emit writeIndexChanged();
-    return 0;
+    return overwritten?-1:0;
 }

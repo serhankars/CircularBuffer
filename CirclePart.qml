@@ -9,7 +9,7 @@ Item {
     property real angle
     property alias strokeColor:sp.strokeColor
     property alias fillColor:sp.fillColor
-    property string text:""
+    property alias text:data.text
     readonly property real innerRadius:radius - thickness
     readonly property real sinAngle:Math.sin(top.angle/2)
     readonly property real cosAngle:Math.cos(top.angle/2)
@@ -54,5 +54,14 @@ Item {
                 relativeY:-1.0* thickness *cosAngle
             }
         }
+    }
+
+    Text{
+        id:data
+        x: -5
+        y: -1* top.radius + top.thickness/3
+        z:1
+        font.family: "Verdana"
+        font.pointSize: top.thickness/3
     }
 }
