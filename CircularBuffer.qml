@@ -54,10 +54,10 @@ Item {
                 angle: (360/backend.rowCount())*(backend.readIndex)
                 axis { x: 0; y: 0; z: 1 }
                 origin.x: writeHead.width/2; origin.y: bufferCircle.height/2.0;
-
                 Behavior on angle{
                     RotationAnimation{
-                        duration:1000
+                        direction: RotationAnimation.Clockwise
+                        duration:500
                         easing.type: Easing.OutExpo
                     }
                 }
@@ -82,7 +82,8 @@ Item {
 
                 Behavior on angle{
                     RotationAnimation{
-                        duration:1000
+                        direction: RotationAnimation.Clockwise
+                        duration:500
                         easing.type: Easing.InOutCirc
                     }
                 }
