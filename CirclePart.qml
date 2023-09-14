@@ -62,6 +62,6 @@ Item {
         y: -1* top.radius + top.thickness/3
         z:1
         font.family: "Verdana"
-        font.pointSize: top.thickness/3
+        font.pointSize: top.thickness==0?20:top.thickness/3
     }
 }

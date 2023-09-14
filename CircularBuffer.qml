@@ -13,6 +13,8 @@ Item {
     property alias capacity:backend.capacity
     property alias readIndex:backend.readIndex
     property alias writeIndex:backend.writeIndex
+    function read(){return backend.read()}
+    function write(val){ backend.write(val)}
 
     CircularBufferBackend{
         id: backend
@@ -32,6 +34,13 @@ Item {
                 angle: (360/backend.rowCount())*(backend.readIndex)
                 axis { x: 0; y: 0; z: 1 }
                 origin.x: writeHead.width/2; origin.y: bufferCircle.height/2.0;
+
+                Behavior on angle{
+                    RotationAnimation{
+                        duration:1000
+                        easing.type: Easing.OutExpo
+                    }
+                }
             }
         ]
     }
@@ -50,6 +59,12 @@ Item {
                 angle: (360/backend.rowCount())*(backend.writeIndex)
                 axis { x: 0; y: 0; z: 1 }
                 origin.x: writeHead.width/2; origin.y: bufferCircle.height/2.0;
+
+                Behavior on angle{
+                    RotationAnimation{
+                        duration:1000
+                        easing.type: Easing.InOutCirc}
+                }
             }
         ]
     }
@@ -100,13 +115,6 @@ Item {
             }
 
         }
-    }
-    focus: true
-    Keys.onRightPressed: {
-        backend.write(1);
-    }
-    Keys.onLeftPressed: {
-        backend.read();
     }
 
     Column{

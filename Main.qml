@@ -14,9 +14,19 @@ Window {
         anchors.fill: parent
         color:"darkGrey"
         CircularBuffer{
+            id:cbuffer
             anchors.fill: parent
             anchors.centerIn: parent
             capacity: 20
         }
+        focus:true
+        Keys.onPressed: (event) => {
+            if(Qt.Key_0<= event.key && event.key <= Qt.Key_9)
+                cbuffer.write(event.key - Qt.Key_0)
+            else
+                cbuffer.read()
+        }
     }
+
+
 }
