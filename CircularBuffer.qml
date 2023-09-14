@@ -13,8 +13,28 @@ Item {
     property alias capacity:backend.capacity
     property alias readIndex:backend.readIndex
     property alias writeIndex:backend.writeIndex
-    function read(){return backend.read()}
-    function write(val){ backend.write(val)}
+    function read(){
+        let result = backend.read()
+        if(result ===-1)
+        {
+            outputTxt.text = "Empty!"
+        }
+        else
+        {
+            outputTxt.text = result;
+        }
+        outputTxtAnim.restart();
+        return result;
+    }
+    function write(val){
+
+        let result = backend.write(val)
+        if(result ===-1)
+        {
+            outputTxt.text = "Overwrite!"
+            outputTxtAnim.start();
+        }
+    }
 
     CircularBufferBackend{
         id: backend
@@ -63,7 +83,8 @@ Item {
                 Behavior on angle{
                     RotationAnimation{
                         duration:1000
-                        easing.type: Easing.InOutCirc}
+                        easing.type: Easing.InOutCirc
+                    }
                 }
             }
         ]
@@ -126,5 +147,47 @@ Item {
         Text{ text:"Length: "+ backend.length}
         Text{ text:"Read index: "+ backend.readIndex}
         Text{ text:"Write index: "+ backend.writeIndex}
+    }
+
+    Text{
+        id: outputTxt
+        anchors.centerIn: parent
+        text:""
+        opacity: 0
+        font.pointSize: 20
+        SequentialAnimation{
+            id: outputTxtAnim
+            ParallelAnimation{
+                PropertyAnimation{
+                    target: outputTxt
+                    properties: "font.pointSize"
+                    to:100
+                    duration:500
+                }
+                PropertyAnimation{
+                    target: outputTxt
+                    properties: "opacity"
+                    to:1
+                    duration:500
+                }
+            }
+            PauseAnimation{
+                duration: 500
+            }
+            ParallelAnimation{
+                PropertyAnimation{
+                    target: outputTxt
+                    properties: "font.pointSize"
+                    to:20
+                    duration:500
+                }
+                PropertyAnimation{
+                    target: outputTxt
+                    properties: "opacity"
+                    to:0
+                    duration:500
+                }
+            }
+        }
     }
 }
