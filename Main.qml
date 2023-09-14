@@ -17,7 +17,7 @@ Window {
             id:cbuffer
             anchors.fill: parent
             anchors.centerIn: parent
-            capacity: 20
+            capacity: 18
         }
         focus:true
         Keys.onPressed: (event) => {
