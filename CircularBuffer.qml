@@ -63,6 +63,21 @@ Item {
                 }
             }
         ]
+
+        Text{
+            anchors.top:parent.bottom
+            anchors.right:parent.left
+            font.pointSize: 12
+            text:"R"
+            color:"white"
+            rotation: -90.0-(360/backend.rowCount())*(backend.readIndex)
+            Behavior on rotation{
+                RotationAnimation{
+                    direction: RotationAnimation.Clockwise
+                    duration:10
+                }
+            }
+        }
     }
 
     Image{
@@ -89,6 +104,21 @@ Item {
                 }
             }
         ]
+
+        Text{
+            anchors.bottom:parent.top
+            anchors.right:parent.left
+            font.pointSize: 12
+            text:"W"
+            color:"red"
+            rotation: -90.0-(360/backend.rowCount())*(backend.writeIndex)
+            Behavior on rotation{
+                RotationAnimation{
+                    direction: RotationAnimation.Clockwise
+                    duration:10
+                }
+            }
+        }
     }
 
     Repeater{
@@ -109,7 +139,7 @@ Item {
     }
 
     Shape{
-        visible:backend.rowCount()==1
+        visible:backend.rowCount()===1
         anchors.centerIn:parent
         ShapePath{
             startX: 0
