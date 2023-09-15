@@ -1,2 +1,6 @@
 # CircularBuffer
-A Circular Buffer Qt-QML Component: Parametric,interactive
+A Circular Buffer QML Component: Parametric,interactive
+
+<p align="center">
+    <img src='./screenshot.gif'>
+</p>
